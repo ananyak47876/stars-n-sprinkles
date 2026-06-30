@@ -1,978 +1,451 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stars 'n' Sprinkles</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --pink:       #F06292;
-      --pink-light: #FCE4EC;
-      --pink-dark:  #C2185B;
-      --gold:       #FFD54F;
-      --gold-dark:  #F9A825;
-      --teal:       #4DB6AC;
-      --teal-dark:  #00796B;
-      --purple:     #9575CD;
-      --white:      #FFFFFF;
-      --text:       #2D2D2D;
-      --muted:      #6B6B6B;
-      --bg:         #FFF9FB;
-      --card-bg:    #FFFFFF;
-      --radius:     16px;
-      --shadow:     0 4px 24px rgba(240,98,146,0.10);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stars 'n' Sprinkles</title>
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<!-- Same fonts as the rest of the site -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,600&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
 
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+<style>
+  /* ============================================================
+     COLORS — edit these four to match your live site exactly.
+     If you change --star-pink or --sprinkle-teal, also update the
+     two hex codes inside the .edge-deco background SVG further down
+     (search for "BORDER COLORS").
+     ============================================================ */
+  :root{
+    --butter:        #FCF4D9;  /* pale butter yellow page background */
+    --star-pink:     #EC6FA4;  /* "Stars" + border stars */
+    --sprinkle-teal: #2BB6A6;  /* "Sprinkles" + sprinkles-page background color */
+    --n-yellow:      #F5C842;  /* the 'n' */
+    --ink:           #20303A;  /* body + heading text */
+    --ink-soft:      #5a6b73;  /* muted text */
+    --card:          #FFFDF4;  /* card surface */
+    --line:          #ECE2BC;  /* hairline borders */
 
-    /* ── NAV ── */
-    nav {
-      background: var(--white);
-      box-shadow: 0 2px 12px rgba(240,98,146,0.10);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 70px;
-    }
+    --edge:          54px;     /* width of the decorative side borders */
+    --maxw:          1000px;
+  }
 
-    .logo {
-      font-family: 'Pacifico', cursive;
-      font-size: 1.6rem;
-      color: var(--pink);
-      text-decoration: none;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-    }
-    .logo span { color: var(--gold-dark); }
+  *{ box-sizing:border-box; }
 
-    .nav-links {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
+  html{ scroll-behavior:smooth; }
 
-    .nav-btn {
-      background: none;
-      border: none;
-      font-family: 'Nunito', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 0.45rem 1.1rem;
-      border-radius: 50px;
-      transition: all 0.2s;
-      color: var(--muted);
-    }
-    .nav-btn:hover { background: var(--pink-light); color: var(--pink-dark); }
-    .nav-btn.active-stars  { background: var(--pink-light); color: var(--pink-dark); }
-    .nav-btn.active-sprinkles { background: #E0F7FA; color: var(--teal-dark); }
+  body{
+    margin:0;
+    background:var(--butter);
+    color:var(--ink);
+    font-family:"Lato", system-ui, sans-serif;
+    line-height:1.6;
+    /* leave room for the decorative side borders */
+    padding:0 var(--edge);
+  }
 
-    .nav-donate {
-      background: var(--pink);
-      color: var(--white);
-      border: none;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 800;
-      font-size: 0.95rem;
-      padding: 0.5rem 1.3rem;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-left: 0.5rem;
-    }
-    .nav-donate:hover { background: var(--pink-dark); }
+  /* ===== Decorative star + sprinkle side borders ===== */
+  .edge-deco{
+    position:fixed;
+    top:0;
+    bottom:0;
+    width:var(--edge);
+    z-index:5;
+    pointer-events:none;
+    /* BORDER COLORS: star = %23EC6FA4 (pink), dot = %232BB6A6 (teal) */
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='54' height='96' viewBox='0 0 54 96'%3E%3Cpolygon points='27,12 30.06,20.30 38.91,20.65 31.96,26.15 34.31,34.68 27,29.40 19.69,34.68 22.04,26.15 15.09,20.65 23.94,20.30' fill='%23EC6FA4'/%3E%3Ccircle cx='27' cy='72' r='6.5' fill='%232BB6A6'/%3E%3C/svg%3E");
+    background-repeat:repeat-y;
+    background-position:center top;
+  }
+  .edge-deco.left{ left:0; }
+  .edge-deco.right{ right:0; }
 
-    /* ── PAGE SECTIONS ── */
-    .page { display: none; }
-    .page.active { display: block; }
+  /* ===== Layout ===== */
+  .wrap{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:0 20px;
+  }
 
-    /* ── HERO ── */
-    .hero {
-      padding: 5rem 2rem 4rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
+  section{ padding:64px 0; }
 
-    .hero-stars {
-      background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD9 40%, #F3E5F5 100%);
-    }
-    .hero-sprinkles {
-      background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 40%, #E8F5E9 100%);
-    }
+  /* ===== Hero / wordmark ===== */
+  .hero{
+    text-align:center;
+    padding-top:72px;
+    padding-bottom:48px;
+  }
+  .wordmark{
+    font-family:"Nunito", sans-serif;
+    font-weight:900;
+    line-height:1.02;
+    letter-spacing:-0.5px;
+    font-size:clamp(2.8rem, 9vw, 6.2rem);
+    margin:0 0 14px;
+  }
+  .wordmark .stars{ color:var(--star-pink); }
+  .wordmark .n{
+    color:var(--n-yellow);
+    font-style:italic;
+    font-weight:800;
+    padding:0 .06em;
+  }
+  .wordmark .sprinkles{ color:var(--sprinkle-teal); }
 
-    .hero-emoji {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
+  .tagline{
+    font-size:clamp(1rem, 2.4vw, 1.25rem);
+    color:var(--ink-soft);
+    max-width:560px;
+    margin:0 auto 30px;
+  }
 
-    .hero h1 {
-      font-family: 'Pacifico', cursive;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-    .hero-stars h1   { color: var(--pink-dark); }
-    .hero-sprinkles h1 { color: var(--teal-dark); }
+  .cta-row{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:"Nunito", sans-serif;
+    font-weight:800;
+    font-size:1rem;
+    text-decoration:none;
+    padding:13px 26px;
+    border-radius:999px;
+    border:2px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease;
+    display:inline-block;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn-stars{ background:var(--star-pink); color:#fff; box-shadow:0 6px 16px rgba(236,111,164,.28); }
+  .btn-sprinkles{ background:var(--sprinkle-teal); color:#fff; box-shadow:0 6px 16px rgba(43,182,166,.28); }
 
-    .hero p {
-      font-size: 1.15rem;
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      line-height: 1.7;
-    }
+  /* ===== Section headings ===== */
+  .eyebrow{
+    font-family:"Nunito", sans-serif;
+    font-weight:800;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:.8rem;
+    color:var(--star-pink);
+    text-align:center;
+    margin:0 0 8px;
+  }
+  h2.section-title{
+    font-family:"Nunito", sans-serif;
+    font-weight:900;
+    font-size:clamp(1.6rem, 4vw, 2.3rem);
+    text-align:center;
+    margin:0 0 36px;
+  }
 
-    .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  /* ===== Mission ===== */
+  .mission{
+    text-align:center;
+  }
+  .mission p{
+    font-family:"Nunito", sans-serif;
+    font-weight:600;
+    font-size:clamp(1.15rem, 2.6vw, 1.55rem);
+    line-height:1.5;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .mission .stars{ color:var(--star-pink); font-weight:800; }
+  .mission .n{ color:var(--n-yellow); font-style:italic; font-weight:800; }
+  .mission .sprinkles{ color:var(--sprinkle-teal); font-weight:800; }
 
-    .btn {
-      padding: 0.75rem 2rem;
-      border-radius: 50px;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 800;
-      font-size: 1rem;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .btn-primary-pink  { background: var(--pink);  color: var(--white); }
-    .btn-primary-pink:hover  { background: var(--pink-dark); }
-    .btn-primary-teal  { background: var(--teal);  color: var(--white); }
-    .btn-primary-teal:hover  { background: var(--teal-dark); }
-    .btn-outline-pink  { background: transparent; color: var(--pink-dark); border: 2px solid var(--pink); }
-    .btn-outline-pink:hover  { background: var(--pink-light); }
-    .btn-outline-teal  { background: transparent; color: var(--teal-dark); border: 2px solid var(--teal); }
-    .btn-outline-teal:hover  { background: #E0F7FA; }
+  /* ===== Key points ===== */
+  .points{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+    gap:22px;
+  }
+  .point{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:28px 24px;
+    box-shadow:0 4px 14px rgba(0,0,0,.04);
+  }
+  .point .icon{ font-size:1.8rem; line-height:1; }
+  .point h3{
+    font-family:"Nunito", sans-serif;
+    font-weight:800;
+    font-size:1.1rem;
+    margin:12px 0 8px;
+  }
+  .point p{ margin:0; color:var(--ink-soft); font-size:.97rem; }
+  .point.p-stars{ border-top:4px solid var(--star-pink); }
+  .point.p-sprinkles{ border-top:4px solid var(--sprinkle-teal); }
+  .point.p-both{ border-top:4px solid var(--n-yellow); }
 
-    /* ── DECORATIVE DOTS ── */
-    .hero::before {
-      content: '✦ ✧ ★ ✦ ✧';
-      position: absolute;
-      top: 1.5rem;
-      left: 2rem;
-      font-size: 1.2rem;
-      color: rgba(240,98,146,0.2);
-      letter-spacing: 1rem;
-    }
-    .hero::after {
-      content: '✦ ✧ ★ ✦ ✧';
-      position: absolute;
-      bottom: 1.5rem;
-      right: 2rem;
-      font-size: 1.2rem;
-      color: rgba(240,98,146,0.2);
-      letter-spacing: 1rem;
-    }
+  /* ===== Team ===== */
+  .team-band{ background:rgba(255,255,255,.45); }
 
-    /* ── SECTIONS ── */
-    section {
-      padding: 4rem 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+  .officers{
+    display:flex;
+    flex-wrap:wrap;
+    gap:34px;
+    justify-content:center;
+  }
+  .officer{ width:200px; text-align:center; }
+  .officer .photo{
+    width:140px; height:140px;
+    margin:0 auto 16px;
+  }
+  .officer .name{
+    font-family:"Nunito", sans-serif;
+    font-weight:800;
+    font-size:1.12rem;
+    margin:0 0 2px;
+  }
+  .officer .role{ color:var(--ink-soft); font-size:.92rem; margin:0; }
 
-    .section-label {
-      font-size: 0.8rem;
-      font-weight: 800;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-    .label-pink   { color: var(--pink); }
-    .label-teal   { color: var(--teal-dark); }
+  .committee{ margin-top:54px; }
+  .committee-title{
+    font-family:"Nunito", sans-serif;
+    font-weight:900;
+    font-size:1.3rem;
+    text-align:center;
+    margin:0 0 6px;
+  }
+  .committee-title.stars{ color:var(--star-pink); }
+  .committee-title.sprinkles{ color:var(--sprinkle-teal); }
+  .committee-sub{ text-align:center; color:var(--ink-soft); font-size:.9rem; margin:0 0 28px; }
 
-    .section-title {
-      font-family: 'Pacifico', cursive;
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
-      margin-bottom: 0.75rem;
-    }
-    .section-sub {
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.7;
-      max-width: 620px;
-    }
+  .directors{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+    gap:24px;
+    max-width:760px;
+    margin:0 auto;
+  }
+  .director{ text-align:center; }
+  .director .photo{
+    width:84px; height:84px;   /* smaller than officers */
+    margin:0 auto 12px;
+  }
+  .director .role{
+    font-family:"Nunito", sans-serif;
+    font-weight:700;
+    font-size:.95rem;
+    margin:0 0 4px;
+    line-height:1.3;
+  }
+  .director .coming{
+    display:inline-block;
+    font-size:.74rem;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    background:var(--butter);
+    border:1px dashed var(--line);
+    border-radius:999px;
+    padding:3px 11px;
+  }
 
-    /* ── STEPS ── */
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2.5rem;
-    }
+  /* ===== Photo placeholders (replace with <img>) ===== */
+  .photo{
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(236,111,164,.18), transparent 60%),
+      radial-gradient(circle at 70% 75%, rgba(43,182,166,.18), transparent 60%),
+      var(--card);
+    border:2px dashed var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--star-pink);
+    overflow:hidden;
+  }
+  .photo svg{ width:42%; height:42%; opacity:.55; }
+  .photo img{ width:100%; height:100%; object-fit:cover; }
 
-    .step-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 2rem 1.5rem;
-      box-shadow: var(--shadow);
-      text-align: center;
-      border-top: 4px solid var(--pink);
-    }
-    .step-card.teal-top { border-top-color: var(--teal); }
+  /* ===== Footer ===== */
+  footer{
+    text-align:center;
+    padding:40px 0 56px;
+    color:var(--ink-soft);
+    font-size:.9rem;
+  }
+  footer .mini{ font-family:"Nunito", sans-serif; font-weight:800; color:var(--ink); }
+  footer .mini .s1{ color:var(--star-pink); }
+  footer .mini .s2{ color:var(--sprinkle-teal); }
+  footer .mini .n{ color:var(--n-yellow); font-style:italic; }
 
-    .step-num {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: var(--pink-light);
-      color: var(--pink-dark);
-      font-weight: 800;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1rem;
-    }
-    .step-num.teal { background: #E0F7FA; color: var(--teal-dark); }
+  /* ===== Load animation ===== */
+  .fade-up{ opacity:0; transform:translateY(16px); animation:fadeUp .7s ease forwards; }
+  .d1{ animation-delay:.05s; } .d2{ animation-delay:.18s; } .d3{ animation-delay:.32s; }
+  @keyframes fadeUp{ to{ opacity:1; transform:none; } }
 
-    .step-card h3 {
-      font-size: 1.05rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-    .step-card p {
-      font-size: 0.95rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    /* ── HOW TO HELP / JOIN ── */
-    .help-section {
-      background: var(--pink-light);
-      border-radius: 24px;
-      padding: 3rem 2rem;
-      margin-top: 1rem;
-    }
-    .help-section.teal { background: #E0F7FA; }
-
-    .help-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-
-    .help-card {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 1.75rem 1.5rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-
-    .help-icon {
-      font-size: 2rem;
-      margin-bottom: 0.75rem;
-      display: block;
-    }
-    .help-card h3 {
-      font-weight: 800;
-      margin-bottom: 0.4rem;
-      font-size: 1rem;
-    }
-    .help-card p {
-      font-size: 0.93rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-
-    /* ── PARTNER CARDS ── */
-    .partner-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1.25rem;
-      margin-top: 2rem;
-    }
-
-    .partner-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 1.75rem 1.25rem;
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-
-    .partner-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      margin: 0 auto 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-    }
-    .partner-icon.restaurant { background: #FFF3E0; }
-    .partner-icon.shelter    { background: #E8F5E9; }
-
-    .partner-card h3 {
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: var(--text);
-      margin-bottom: 0.3rem;
-    }
-    .partner-card p {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .placeholder-badge {
-      display: inline-block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 0.2rem 0.6rem;
-      border-radius: 50px;
-      background: #F5F5F5;
-      color: #AAA;
-      margin-top: 0.4rem;
-    }
-
-    /* ── CTA BANNER ── */
-    .cta-banner {
-      background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
-      border-radius: 24px;
-      padding: 3rem 2rem;
-      text-align: center;
-      color: var(--white);
-      margin-top: 1rem;
-    }
-    .cta-banner.teal-banner {
-      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
-    }
-    .cta-banner h2 {
-      font-family: 'Pacifico', cursive;
-      font-size: clamp(1.5rem, 3vw, 2rem);
-      margin-bottom: 0.75rem;
-    }
-    .cta-banner p {
-      font-size: 1.05rem;
-      opacity: 0.9;
-      margin-bottom: 1.75rem;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.6;
-    }
-    .cta-banner .btn-white {
-      background: var(--white);
-      color: var(--pink-dark);
-      border: none;
-    }
-    .cta-banner .btn-white:hover { opacity: 0.9; }
-    .cta-banner .btn-white.teal-text { color: var(--teal-dark); }
-
-    /* ── DIVIDER ── */
-    .wave-divider {
-      width: 100%;
-      overflow: hidden;
-      line-height: 0;
-    }
-    .wave-divider svg { display: block; }
-
-    /* ── FOOTER ── */
-    footer {
-      background: #2D2D2D;
-      color: #CCC;
-      padding: 3rem 2rem 2rem;
-      text-align: center;
-    }
-
-    .footer-logo {
-      font-family: 'Pacifico', cursive;
-      font-size: 1.8rem;
-      color: var(--pink);
-      margin-bottom: 0.5rem;
-    }
-    .footer-logo span { color: var(--gold); }
-
-    .footer-tagline {
-      font-size: 0.95rem;
-      color: #AAA;
-      margin-bottom: 1.75rem;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-    }
-
-    .footer-links a {
-      color: #CCC;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--pink); }
-
-    .social-row {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .social-pill {
-      background: #3D3D3D;
-      color: #DDD;
-      border-radius: 50px;
-      padding: 0.4rem 1.1rem;
-      font-size: 0.88rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: background 0.2s;
-    }
-    .social-pill:hover { background: var(--pink); color: var(--white); }
-
-    .footer-contact {
-      font-size: 0.9rem;
-      color: #888;
-      margin-bottom: 2rem;
-    }
-    .footer-contact a { color: var(--pink); text-decoration: none; }
-
-    .footer-bottom {
-      border-top: 1px solid #3D3D3D;
-      padding-top: 1.25rem;
-      font-size: 0.82rem;
-      color: #666;
-    }
-
-    /* ── VOLUNTEER MODAL ── */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-
-    .modal {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 2.5rem;
-      max-width: 480px;
-      width: 90%;
-      position: relative;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    }
-
-    .modal h2 {
-      font-family: 'Pacifico', cursive;
-      font-size: 1.6rem;
-      color: var(--pink-dark);
-      margin-bottom: 0.5rem;
-    }
-    .modal p { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; }
-
-    .modal label {
-      display: block;
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 0.3rem;
-      color: var(--text);
-    }
-    .modal input, .modal select, .modal textarea {
-      width: 100%;
-      padding: 0.7rem 1rem;
-      border: 2px solid #EEE;
-      border-radius: 10px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
-      transition: border-color 0.2s;
-      color: var(--text);
-    }
-    .modal input:focus, .modal select:focus, .modal textarea:focus {
-      outline: none;
-      border-color: var(--pink);
-    }
-    .modal textarea { height: 90px; resize: vertical; }
-
-    .modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #AAA;
-      line-height: 1;
-    }
-    .modal-close:hover { color: var(--text); }
-
-    .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.5rem; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      nav { padding: 0 1rem; }
-      .logo { font-size: 1.2rem; }
-      .nav-btn { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
-      section { padding: 3rem 1.25rem; }
-    }
-  </style>
+  @media (max-width:640px){
+    :root{ --edge:30px; }
+    body{ padding:0 var(--edge); }
+    .edge-deco{ background-size:30px auto; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .fade-up{ opacity:1; transform:none; animation:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ════════════════ NAV ════════════════ -->
-<nav>
-  <span class="logo" onclick="showPage('stars')">Stars <span>'n'</span> Sprinkles</span>
-  <div class="nav-links">
-    <button class="nav-btn active-stars" id="nav-stars" onclick="showPage('stars')">⭐ Stars</button>
-    <button class="nav-btn" id="nav-sprinkles" onclick="showPage('sprinkles')">🍽️ Sprinkles</button>
-    <button class="nav-btn" onclick="openModal('contact')">Contact</button>
-    <button class="nav-donate" onclick="openModal('donate')">Donate 💖</button>
-  </div>
-</nav>
+  <!-- Decorative star + sprinkle borders -->
+  <div class="edge-deco left" aria-hidden="true"></div>
+  <div class="edge-deco right" aria-hidden="true"></div>
 
-<!-- ════════════════ STARS PAGE ════════════════ -->
-<div class="page active" id="page-stars">
-
-  <!-- Hero -->
-  <div class="hero hero-stars">
-    <span class="hero-emoji">⭐</span>
-    <h1>Bringing Joy to<br>Little Warriors</h1>
-    <p>We create handmade cards and deliver thoughtful gifts to children fighting battles in Dallas-area hospitals — because every child deserves to feel seen, loved, and celebrated.</p>
-    <div class="hero-ctas">
-      <button class="btn btn-primary-pink" onclick="openModal('volunteer')">Volunteer with Us</button>
-      <button class="btn btn-outline-pink" onclick="openModal('donate')">Donate a Gift</button>
+  <!-- ===================== HERO ===================== -->
+  <header class="hero">
+    <div class="wrap">
+      <h1 class="wordmark fade-up d1">
+        <span class="stars">Stars</span> <span class="n">'n'</span> <span class="sprinkles">Sprinkles</span>
+      </h1>
+      <p class="tagline fade-up d2">
+        Turning community resources into hope and comfort across the Dallas area &mdash;
+        one card, one gift, and one rescued meal at a time.
+      </p>
     </div>
-  </div>
+  </header>
 
-  <!-- How It Works -->
+  <!-- ===================== MISSION ===================== -->
+  <section class="mission">
+    <div class="wrap">
+      <p class="eyebrow">Our Mission</p>
+      <p>
+        <span class="stars">Stars</span> <span class="n">'n'</span> <span class="sprinkles">Sprinkles</span>
+        transforms community resources into hope and comfort by delivering creative cheer to
+        hospitalized children and safely rescuing surplus food to nourish individuals and
+        families in need.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== KEY POINTS ===================== -->
   <section>
-    <div class="section-label label-pink">The Stars Program</div>
-    <h2 class="section-title">How It Works</h2>
-    <p class="section-sub">From your kitchen table to a child's hospital room — here's how a simple card becomes something unforgettable.</p>
-
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">1</div>
-        <h3>Cards Are Made</h3>
-        <p>Volunteers create heartfelt handmade cards at our community craft events or from home — full of color, warmth, and encouraging words.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">2</div>
-        <h3>Gifts Are Gathered</h3>
-        <p>Through donations from our community, we curate age-appropriate, hospital-safe gift items that bring smiles and comfort to kids of all ages.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">3</div>
-        <h3>We Deliver</h3>
-        <p>Our team coordinates with Dallas-area children's hospitals to deliver cards and gifts directly to patients who need a little extra sunshine.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">4</div>
-        <h3>A Child Smiles</h3>
-        <p>A sick child opens a card made just for them and a gift chosen with love — a small moment that means the whole world.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- How to Help -->
-  <section style="padding-top: 0;">
-    <div class="help-section">
-      <div class="section-label label-pink">Get Involved</div>
-      <h2 class="section-title">How You Can Help</h2>
-      <p class="section-sub">There are so many ways to be a part of the Stars program — whether you have five minutes or five hours.</p>
-
-      <div class="help-grid">
-        <div class="help-card">
-          <span class="help-icon">✉️</span>
-          <h3>Make a Card</h3>
-          <p>Join one of our card-making events or craft one from home. No artistic experience needed — just heart.</p>
-          <button class="btn btn-primary-pink" style="font-size:0.88rem; padding:0.5rem 1.25rem;" onclick="openModal('volunteer')">Sign Up</button>
+    <div class="wrap">
+      <p class="eyebrow">What We Do</p>
+      <h2 class="section-title">Two branches, one purpose</h2>
+      <div class="points">
+        <div class="point p-both">
+          <div class="icon">✦</div>
+          <h3>A two-branch nonprofit</h3>
+          <p>One registered nonprofit project built around two missions &mdash; which is exactly why we're Stars <em>'n'</em> Sprinkles.</p>
         </div>
-        <div class="help-card">
-          <span class="help-icon">🎁</span>
-          <h3>Donate a Gift</h3>
-          <p>Contribute items from our wish list — books, art supplies, games, stuffed animals — or donate funds toward gifts.</p>
-          <button class="btn btn-primary-pink" style="font-size:0.88rem; padding:0.5rem 1.25rem;" onclick="openModal('donate')">Donate</button>
+        <div class="point p-stars">
+          <div class="icon" style="color:var(--star-pink)">★</div>
+          <h3>The Stars branch</h3>
+          <p>Gifting children in children's hospitals joy through handmade cards and thoughtful gifts.</p>
         </div>
-        <div class="help-card">
-          <span class="help-icon">📣</span>
-          <h3>Spread the Word</h3>
-          <p>Share our mission with friends, family, schools, or faith communities. Every new volunteer and donor starts with a single share.</p>
-          <button class="btn btn-outline-pink" style="font-size:0.88rem; padding:0.5rem 1.25rem;" onclick="openModal('contact')">Get in Touch</button>
-        </div>
-        <div class="help-card">
-          <span class="help-icon">🏢</span>
-          <h3>Host a Drive</h3>
-          <p>Organize a card-making or gift drive at your school, office, or community group. We'll help you every step of the way.</p>
-          <button class="btn btn-outline-pink" style="font-size:0.88rem; padding:0.5rem 1.25rem;" onclick="openModal('contact')">Partner With Us</button>
+        <div class="point p-sprinkles">
+          <div class="icon" style="color:var(--sprinkle-teal)">●</div>
+          <h3>The Sprinkles branch</h3>
+          <p>Connecting restaurants with surplus food to homeless shelters, food banks, women's shelters, and people in need &mdash; cutting food waste across the Dallas area.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA Banner -->
-  <section style="padding-top:0;">
-    <div class="cta-banner">
-      <h2>Every Child Deserves a Star Moment ✨</h2>
-      <p>It only takes a few minutes to make a card that a child will treasure. Join our volunteer family today.</p>
-      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-white" onclick="openModal('volunteer')">Volunteer Now</button>
-        <button class="btn btn-white" onclick="openModal('donate')">Make a Donation</button>
-      </div>
-    </div>
-  </section>
+  <!-- ===================== TEAM ===================== -->
+  <section class="team-band">
+    <div class="wrap">
+      <p class="eyebrow">Our People</p>
+      <h2 class="section-title">Leadership &amp; committees</h2>
 
-</div><!-- /page-stars -->
-
-
-<!-- ════════════════ SPRINKLES PAGE ════════════════ -->
-<div class="page" id="page-sprinkles">
-
-  <!-- Hero -->
-  <div class="hero hero-sprinkles">
-    <span class="hero-emoji">🍽️</span>
-    <h1>Turning Surplus<br>into Sustenance</h1>
-    <p>We connect Dallas-area restaurants that have surplus, regulation-compliant food with shelters and individuals facing food insecurity — making sure good food never goes to waste.</p>
-    <div class="hero-ctas">
-      <button class="btn btn-primary-teal" onclick="openModal('restaurant')">Register Your Restaurant</button>
-      <button class="btn btn-outline-teal" onclick="openModal('shelter')">Register Your Shelter</button>
-    </div>
-  </div>
-
-  <!-- Partner Restaurants -->
-  <section>
-    <div class="section-label label-teal">Our Network</div>
-    <h2 class="section-title">Partner Restaurants</h2>
-    <p class="section-sub">These Dallas-area restaurants are helping fight hunger by donating surplus food that meets health and safety regulations. Want to see your restaurant here?</p>
-
-    <div class="partner-grid">
-      <div class="partner-card">
-        <div class="partner-icon restaurant">🍕</div>
-        <h3>Restaurant Name</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card">
-        <div class="partner-icon restaurant">🥗</div>
-        <h3>Restaurant Name</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card">
-        <div class="partner-icon restaurant">🍜</div>
-        <h3>Restaurant Name</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card">
-        <div class="partner-icon restaurant">🥪</div>
-        <h3>Restaurant Name</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card" style="border: 2px dashed #B2DFDB; box-shadow: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #F0FDFC;">
-        <div style="font-size:2rem; margin-bottom:0.75rem;">➕</div>
-        <h3 style="color: var(--teal-dark); font-size:0.9rem;">Your Restaurant</h3>
-        <p style="font-size:0.82rem;">Join the network</p>
-        <button class="btn btn-primary-teal" style="font-size:0.82rem; padding:0.45rem 1rem; margin-top:0.75rem;" onclick="openModal('restaurant')">Get Started</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Partner Shelters -->
-  <section style="padding-top: 0;">
-    <div class="section-label label-teal">Where Food Goes</div>
-    <h2 class="section-title">Partner Shelters & Organizations</h2>
-    <p class="section-sub">We work with shelters, food pantries, and community organizations across the Dallas area to get surplus food where it's needed most.</p>
-
-    <div class="partner-grid">
-      <div class="partner-card">
-        <div class="partner-icon shelter">🏠</div>
-        <h3>Shelter Name</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card">
-        <div class="partner-icon shelter">🤝</div>
-        <h3>Organization Name</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card">
-        <div class="partner-icon shelter">🍱</div>
-        <h3>Food Pantry Name</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card">
-        <div class="partner-icon shelter">💙</div>
-        <h3>Community Center</h3>
-        <p>Dallas, TX</p>
-        <span class="placeholder-badge">Coming Soon</span>
-      </div>
-      <div class="partner-card" style="border: 2px dashed #B2DFDB; box-shadow: none; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #F0FDFC;">
-        <div style="font-size:2rem; margin-bottom:0.75rem;">➕</div>
-        <h3 style="color: var(--teal-dark); font-size:0.9rem;">Your Organization</h3>
-        <p style="font-size:0.82rem;">Connect with us</p>
-        <button class="btn btn-primary-teal" style="font-size:0.82rem; padding:0.45rem 1rem; margin-top:0.75rem;" onclick="openModal('shelter')">Register</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section style="padding-top: 0;">
-    <div class="help-section teal">
-      <div class="section-label label-teal">The Process</div>
-      <h2 class="section-title">How Sprinkles Works</h2>
-      <p class="section-sub">A simple, compliant process that gets good food to people in need — fast.</p>
-
-      <div class="steps-grid" style="margin-top:2rem;">
-        <div class="step-card teal-top">
-          <div class="step-num teal">1</div>
-          <h3>Restaurants Sign Up</h3>
-          <p>Dallas-area restaurants register with us and let us know when they have surplus food that meets health and safety regulations.</p>
+      <!-- Officers (larger photos) -->
+      <div class="officers">
+        <div class="officer">
+          <!-- Add photo: replace the inner SVG with <img src="images/ananya.jpg" alt="Ananya Karthikeyan"> -->
+          <div class="photo">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg>
+          </div>
+          <p class="name">Ananya Karthikeyan</p>
+          <p class="role">President</p>
         </div>
-        <div class="step-card teal-top">
-          <div class="step-num teal">2</div>
-          <h3>We Coordinate</h3>
-          <p>Our team quickly connects the restaurant with a nearby partner shelter or organization based on capacity and need.</p>
+        <div class="officer">
+          <!-- Add photo: replace the inner SVG with <img src="images/shobana.jpg" alt="Shobana Rajendran"> -->
+          <div class="photo">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg>
+          </div>
+          <p class="name">Shobana Rajendran</p>
+          <p class="role">Secretary</p>
         </div>
-        <div class="step-card teal-top">
-          <div class="step-num teal">3</div>
-          <h3>Food Is Delivered</h3>
-          <p>Food is picked up and delivered safely to the shelter — often the same day — reaching people who need it most.</p>
+        <div class="officer">
+          <!-- Add photo: replace the inner SVG with <img src="images/karthikeyan.jpg" alt="Karthikeyan Ramanathan"> -->
+          <div class="photo">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg>
+          </div>
+          <p class="name">Karthikeyan Ramanathan</p>
+          <p class="role">Treasurer</p>
         </div>
-        <div class="step-card teal-top">
-          <div class="step-num teal">4</div>
-          <h3>Nobody Goes Hungry</h3>
-          <p>Good food that would have gone to waste instead nourishes families, individuals, and communities across Dallas.</p>
+      </div>
+
+      <!-- Stars Committee (smaller photos) -->
+      <div class="committee">
+        <h3 class="committee-title stars">Stars Committee</h3>
+        <p class="committee-sub">Cards, gifts &amp; pediatric patient experience</p>
+        <div class="directors">
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Communications</p>
+            <span class="coming">Coming soon</span>
+          </div>
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Community Engagement</p>
+            <span class="coming">Coming soon</span>
+          </div>
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Quality and Compliance</p>
+            <span class="coming">Coming soon</span>
+          </div>
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Pediatric Patient Experience</p>
+            <span class="coming">Coming soon</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sprinkles Committee (smaller photos) -->
+      <div class="committee">
+        <h3 class="committee-title sprinkles">Sprinkles Committee</h3>
+        <p class="committee-sub">Food rescue, nutrition &amp; dispatch</p>
+        <div class="directors">
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Communications</p>
+            <span class="coming">Coming soon</span>
+          </div>
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Quality and Nutrition</p>
+            <span class="coming">Coming soon</span>
+          </div>
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Dispatch Operations</p>
+            <span class="coming">Coming soon</span>
+          </div>
+          <div class="director">
+            <div class="photo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 7.1-1.01z"/></svg></div>
+            <p class="role">Director of Inventory Management</p>
+            <span class="coming">Coming soon</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA Banner -->
-  <section style="padding-top:0;">
-    <div class="cta-banner teal-banner">
-      <h2>Good Food Shouldn't Go to Waste 🌿</h2>
-      <p>Whether you run a restaurant or a shelter, there's a place for you in the Sprinkles network. Let's solve hunger together.</p>
-      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-white teal-text" onclick="openModal('restaurant')">I Have a Restaurant</button>
-        <button class="btn btn-white teal-text" onclick="openModal('shelter')">I Run a Shelter</button>
-      </div>
-    </div>
-  </section>
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    <p class="mini"><span class="s1">Stars</span> <span class="n">'n'</span> <span class="s2">Sprinkles</span></p>
+    <p>A registered nonprofit serving the Dallas&ndash;Fort Worth area.</p>
+  </footer>
 
-</div><!-- /page-sprinkles -->
-
-
-<!-- ════════════════ FOOTER ════════════════ -->
-<footer>
-  <div class="footer-logo">Stars <span>'n'</span> Sprinkles</div>
-  <div class="footer-tagline">Cards & gifts for little warriors · Surplus food for those in need · Dallas, TX</div>
-
-  <div class="footer-links">
-    <a href="#" onclick="showPage('stars'); return false;">⭐ Stars Program</a>
-    <a href="#" onclick="showPage('sprinkles'); return false;">🍽️ Sprinkles Program</a>
-    <a href="#" onclick="openModal('volunteer'); return false;">Volunteer</a>
-    <a href="#" onclick="openModal('donate'); return false;">Donate</a>
-    <a href="#" onclick="openModal('contact'); return false;">Contact</a>
-  </div>
-
-  <div class="social-row">
-    <a class="social-pill" href="#">📸 Instagram</a>
-    <a class="social-pill" href="#">📘 Facebook</a>
-    <a class="social-pill" href="#">🐦 Twitter / X</a>
-  </div>
-
-  <div class="footer-contact">
-    Questions? Reach us at <a href="mailto:hello@starsnsprinkles.org">hello@starsnsprinkles.org</a>
-  </div>
-
-  <div class="footer-bottom">
-    © 2025 Stars 'n' Sprinkles · A 501(c)(3) nonprofit organization · Dallas, Texas<br>
-    <small style="opacity:0.6;">Placeholder content — update before publishing</small>
-  </div>
-</footer>
-
-
-<!-- ════════════════ MODALS ════════════════ -->
-
-<!-- Volunteer -->
-<div class="modal-overlay" id="modal-volunteer">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('volunteer')">✕</button>
-    <h2>⭐ Volunteer</h2>
-    <p>Fill out the form below and we'll be in touch with upcoming card-making events and volunteer opportunities.</p>
-    <label>Your Name</label>
-    <input type="text" placeholder="Jane Doe" />
-    <label>Email Address</label>
-    <input type="email" placeholder="jane@email.com" />
-    <label>How would you like to help?</label>
-    <select>
-      <option>Make cards at an event</option>
-      <option>Make cards from home</option>
-      <option>Help with delivery</option>
-      <option>Host a card/gift drive</option>
-      <option>Other</option>
-    </select>
-    <div class="modal-footer">
-      <button class="btn btn-outline-pink" onclick="closeModal('volunteer')">Cancel</button>
-      <button class="btn btn-primary-pink" onclick="closeModal('volunteer')">Submit ✨</button>
-    </div>
-  </div>
-</div>
-
-<!-- Donate -->
-<div class="modal-overlay" id="modal-donate">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('donate')">✕</button>
-    <h2>💖 Donate</h2>
-    <p>Your generosity helps us bring smiles to children in Dallas-area hospitals and fund our food rescue efforts. Every bit helps.</p>
-    <label>Donation Type</label>
-    <select>
-      <option>Financial donation</option>
-      <option>Gift items for children</option>
-      <option>Card-making supplies</option>
-      <option>Other</option>
-    </select>
-    <label>Your Name</label>
-    <input type="text" placeholder="Jane Doe" />
-    <label>Email Address</label>
-    <input type="email" placeholder="jane@email.com" />
-    <label>Message (optional)</label>
-    <textarea placeholder="Any notes or questions..."></textarea>
-    <div class="modal-footer">
-      <button class="btn btn-outline-pink" onclick="closeModal('donate')">Cancel</button>
-      <button class="btn btn-primary-pink" onclick="closeModal('donate')">Submit 💖</button>
-    </div>
-  </div>
-</div>
-
-<!-- Contact -->
-<div class="modal-overlay" id="modal-contact">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('contact')">✕</button>
-    <h2>✉️ Contact Us</h2>
-    <p>We'd love to hear from you — whether you have a question, a partnership idea, or just want to say hi.</p>
-    <label>Your Name</label>
-    <input type="text" placeholder="Jane Doe" />
-    <label>Email Address</label>
-    <input type="email" placeholder="jane@email.com" />
-    <label>Message</label>
-    <textarea placeholder="What's on your mind?"></textarea>
-    <div class="modal-footer">
-      <button class="btn btn-outline-pink" onclick="closeModal('contact')">Cancel</button>
-      <button class="btn btn-primary-pink" onclick="closeModal('contact')">Send Message</button>
-    </div>
-  </div>
-</div>
-
-<!-- Restaurant Sign Up -->
-<div class="modal-overlay" id="modal-restaurant">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('restaurant')">✕</button>
-    <h2>🍽️ Register Your Restaurant</h2>
-    <p>Join the Sprinkles network and help us redirect your surplus, regulation-compliant food to people who need it in the Dallas area.</p>
-    <label>Restaurant Name</label>
-    <input type="text" placeholder="The Good Table" />
-    <label>Contact Name</label>
-    <input type="text" placeholder="Jane Doe" />
-    <label>Email Address</label>
-    <input type="email" placeholder="jane@restaurant.com" />
-    <label>Neighborhood / Area (Dallas)</label>
-    <input type="text" placeholder="e.g. Oak Cliff, Uptown, Garland..." />
-    <div class="modal-footer">
-      <button class="btn btn-outline-teal" onclick="closeModal('restaurant')">Cancel</button>
-      <button class="btn btn-primary-teal" onclick="closeModal('restaurant')">Submit 🌿</button>
-    </div>
-  </div>
-</div>
-
-<!-- Shelter Sign Up -->
-<div class="modal-overlay" id="modal-shelter">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('shelter')">✕</button>
-    <h2>🏠 Register Your Organization</h2>
-    <p>Let us know about your shelter, food pantry, or community organization so we can connect you with surplus food donations in the Dallas area.</p>
-    <label>Organization Name</label>
-    <input type="text" placeholder="Hope Community Center" />
-    <label>Contact Name</label>
-    <input type="text" placeholder="Jane Doe" />
-    <label>Email Address</label>
-    <input type="email" placeholder="jane@organization.org" />
-    <label>Neighborhood / Area (Dallas)</label>
-    <input type="text" placeholder="e.g. South Dallas, Irving, Mesquite..." />
-    <label>Type of Organization</label>
-    <select>
-      <option>Homeless shelter</option>
-      <option>Food pantry</option>
-      <option>Community kitchen</option>
-      <option>Transitional housing</option>
-      <option>Other</option>
-    </select>
-    <div class="modal-footer">
-      <button class="btn btn-outline-teal" onclick="closeModal('shelter')">Cancel</button>
-      <button class="btn btn-primary-teal" onclick="closeModal('shelter')">Submit 💙</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════════════ JS ════════════════ -->
-<script>
-  function showPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-
-    document.querySelectorAll('.nav-btn').forEach(b => {
-      b.classList.remove('active-stars', 'active-sprinkles');
-    });
-    document.getElementById('nav-' + name).classList.add('active-' + name);
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function openModal(name) {
-    document.getElementById('modal-' + name).classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal(name) {
-    document.getElementById('modal-' + name).classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  // Close modal on overlay click
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', function(e) {
-      if (e.target === this) {
-        this.classList.remove('open');
-        document.body.style.overflow = '';
-      }
-    });
-  });
-</script>
 </body>
 </html>
